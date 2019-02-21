@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Jogo da Cobrinha</title>
+</head>
+
+<body>
+
+    <canvas id="stage" width="400" height="400"></canvas>
+    <script type="text/javascript">
+
+        window.onload = function () {
+
+            var stage = document.getElementById('stage');
+            var ctx = stage.getContext("2d");
+
+            document.addEventListener("keydown", keyPush);
+
+            setInterval(game, 60);
+
+            const velocidade = 1;
+
+            var velX = velY = 0;
+            var posX = posY = 10;
+
+            var tamanhoPixel = 20;
+            var qtdPixels = 20;
+
+            var appleX = AppleY = 15;
+
+            //rastro cobra
+            var trail = [];
+            tail = 5;
+
+            function game() {
+
+                posX += velX;
+                posY += velY;
+
+                if (posX < 0) {
+                    posX = qtdPixels - 1;
+                }
+                if (posX > qtdPixels - 1) {
+                    posX = 0;
+                }
+                if (posY < 0) {
+                    posY = qtdPixels - 1;
+                }
+                if (posY > qtdPixels - 1) {
+                    posY = 0;
+                }
+
+
+                //desenha fundo
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, stage.width, stage.height);
+
+                //desenha Maçã
+                ctx.fillStyle = "red";
+                ctx.fillRect(appleX * tamanhoPixel, AppleY * tamanhoPixel, tamanhoPixel, tamanhoPixel);
+
+                //desenha cobra
+                ctx.fillStyle = "gray";
+                for (let i = 0; i < trail.length; i++) {
+                    ctx.fillRect(trail[i].x * tamanhoPixel, trail[i].y * tamanhoPixel, tamanhoPixel, tamanhoPixel);
+
+                    //se a cabeça encostar no rastro - colisão
+                    if (trail[i].x == posX && trail[i].y == posY) {
+                        velX = 0;
+                        velY = 0;
+                        tail = 5;
+                    }
+                }
+
+                //retira a ultima pesa do vetor
+                trail.push({ x: posX, y: posY })
+
+                //enquanto o vetor Trail for maior que a quantidade de tails inicial o shift remove o primeiro elemento do array trail
+                while (trail.length > tail) {
+                    trail.shift();
+                }
+                //respawna a maçã em algum lugar do mapa
+                if (appleX == posX && AppleY == posY) {
+                    tail++;
+                    appleX = Math.floor(Math.random() * qtdPixels);
+                    appleY = Math.floor(Math.random() * qtdPixels);
+                }
+            }
+
+            //movimentação da cobrinha
+            function keyPush(event) {
+
+                switch (event.keyCode) {
+                    case 37: //left
+                        velX = -velocidade;
+                        velY = -0;
+                        break;
+                    case 38: //Up
+                        velY = -velocidade;
+                        velX = -0;
+                        break;
+                    case 39: //Right
+                        velX = velocidade;
+                        velY = -0;
+                        break;
+                    case 40: //Down
+                        velY = velocidade;
+                        velX = 0;
+                        break;
+                }
+
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
